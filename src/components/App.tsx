@@ -1,15 +1,18 @@
+import { RecordOf } from 'immutable';
+
 import React, { FC, ReactElement, useContext, useEffect } from 'react';
 
-import { Context } from '@graasp/apps-query-client';
+import { Context, LocalContext } from '@graasp/apps-query-client';
 
 import { CONTEXTS, DEFAULT_CONTEXT_LANGUAGE } from '../config/appSettings';
 import i18n from '../config/i18n';
 import { AppDataProvider } from './context/AppDataContext';
+import { AppSettingProvider } from './context/AppSettingContext';
 import { MembersProvider } from './context/MembersContext';
 import PlayerView from './views/read/PlayerView';
 
 const App: FC = () => {
-  const context = useContext(Context);
+  const context: RecordOf<LocalContext> = useContext(Context);
 
   useEffect(() => {
     // handle a change of language
@@ -40,7 +43,9 @@ const App: FC = () => {
 
   return (
     <MembersProvider>
-      <AppDataProvider>{renderContent()}</AppDataProvider>
+      <AppDataProvider>
+        <AppSettingProvider>{renderContent()}</AppSettingProvider>
+      </AppDataProvider>
     </MembersProvider>
   );
 };

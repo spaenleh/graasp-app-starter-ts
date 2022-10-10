@@ -9,8 +9,7 @@ export const MOCK_SERVER_ITEM = { id: '1234567890' };
 
 export const MOCK_SERVER_API_HOST = 'http://localhost:3636';
 
-export const SINGLE_LINE_MOCK_COMMENTS: AppData[] = [
-  // comments
+export const MOCK_APP_DATA: AppData[] = [
   {
     id: uuid(),
     data: {

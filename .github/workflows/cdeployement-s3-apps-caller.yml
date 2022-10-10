@@ -10,7 +10,8 @@ on:
 jobs:
   graasp-deploy-s3-apps-workflow:
     # Replace with repository name
-    name: Code Capsule App
+    # todo: replace me
+    name: \#Graasp Template App\#
     # Replace 'main' with the hash of a commit, so it points to an specific version of the reusable workflow that is used
     # Reference reusable workflow file. Using the commit SHA is the safest for stability and security
     uses: graasp/graasp-deploy/.github/workflows/cdeployment-s3-apps.yml@7b5dd84304458c3c5ab03cbbde059670f77b1687

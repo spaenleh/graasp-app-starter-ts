@@ -14,7 +14,8 @@ on:
 # This workflow is made up of one job that calls the reusable workflow in graasp-deploy
 jobs:
   graasp-deploy-s3-apps-workflow:
-    name: Code Capsule App
+    # todo: replace me
+    name: \#Graasp Template App\#
     uses: graasp/graasp-deploy/.github/workflows/cintegration-s3-apps.yml@a5e6f97c18c86d97e3e8f15b27e4d898746327cf
     with:
       build-folder: 'build'

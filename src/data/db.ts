@@ -68,7 +68,7 @@ const buildDatabase = (
       name: MOCK_SETTING_KEY,
       data: {
         ...DEFAULT_MOCK_SETTING,
-        // place here any setting you would like to overwrite
+        // todo: place here any setting you would like to overwrite
         // settingKey: value
       },
       itemId: appContext.itemId || '',

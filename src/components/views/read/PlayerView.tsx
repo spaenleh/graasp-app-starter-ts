@@ -1,14 +1,33 @@
-import React, { FC, useContext } from 'react';
+import { RecordOf } from 'immutable';
 
-import { Context } from '@graasp/apps-query-client';
+import React, { FC, useContext, useState } from 'react';
 
-import { Button, Divider, Stack, Typography, styled } from '@mui/material';
+import { Context, LocalContext } from '@graasp/apps-query-client';
+
+import {
+  Button,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
+  styled,
+} from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../config/appDataTypes';
+import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
 import { hooks } from '../../../config/queryClient';
 // import { MUTATION_KEYS, hooks, useMutation } from '../../../config/queryClient';
-import { PLAYER_VIEW_CY } from '../../../config/selectors';
+import {
+  APP_DATA_CONTAINER_CY,
+  APP_SETTING_CONTAINER_CY,
+  NEW_APP_DATA_BUTTON_CY,
+  PLAYER_VIEW_CY,
+  SETTING_NAME_FIELD_CY,
+  SETTING_VALUE_FIELD_CY,
+  UPDATE_APP_SETTING_BUTTON_CY,
+} from '../../../config/selectors';
 import { useAppDataContext } from '../../context/AppDataContext';
+import { useAppSettingContext } from '../../context/AppSettingContext';
 import { useMembersContext } from '../../context/MembersContext';
 
 const SmallPre = styled('pre')(({ theme }) => ({
@@ -21,18 +40,33 @@ const SmallPre = styled('pre')(({ theme }) => ({
 }));
 
 const PlayerView: FC = () => {
-  const context = useContext(Context);
-  const members = useMembersContext();
-  const { postAppData, appDataArray } = useAppDataContext();
+  // context describes the item context, i.e. has the item id, current member id (memberId),
+  // the language and current view (builder, player, ...), the current permission (admin, write, read)
+  const context: RecordOf<LocalContext> = useContext(Context);
   const { data: appContext } = hooks.useAppContext();
 
-  // const postSettings = useMutation<unknown, unknown, Partial<AppSetting>>(
-  //   MUTATION_KEYS.POST_APP_SETTING,
-  // );
-  // const patchSettings = useMutation<unknown, unknown, Partial<AppSetting>>(
-  //   MUTATION_KEYS.PATCH_APP_SETTING,
-  // );
-  // const appSettings = hooks.useAppSettings();
+  // get the members having access to the space
+  const members = useMembersContext();
+
+  // get the appData array and a callback to post new appData
+  const { postAppData, appDataArray } = useAppDataContext();
+
+  // get the appData array and a callback to post new appSetting
+  const { patchAppSetting, postAppSetting, appSettingArray } =
+    useAppSettingContext();
+
+  const [settingValue, setSettingValue] = useState('');
+  const [settingName, setSettingName] = useState(MOCK_SETTING_KEY);
+
+  const handleAppSetting = (name: string, value: string): void => {
+    const mockSetting = appSettingArray.find((s) => s.name === name);
+
+    if (mockSetting) {
+      patchAppSetting({ data: { content: value }, id: mockSetting.id });
+    } else {
+      postAppSetting({ data: { content: value }, name });
+    }
+  };
 
   return (
     <div data-cy={PLAYER_VIEW_CY}>
@@ -43,6 +77,7 @@ const PlayerView: FC = () => {
           sx={{ flex: 1, height: '100vh', p: 2 }}
         >
           <Button
+            data-cy={NEW_APP_DATA_BUTTON_CY}
             onClick={() =>
               postAppData({
                 data: { content: 'New Data' },
@@ -52,10 +87,32 @@ const PlayerView: FC = () => {
           >
             New App Data
           </Button>
-          <SmallPre>
-            {appDataArray
-              .map((appData) => JSON.stringify(appData, undefined, 2))
-              .join('\n')}
+          <SmallPre data-cy={APP_DATA_CONTAINER_CY}>
+            {JSON.stringify(appDataArray, undefined, 2)}
+          </SmallPre>
+          <Divider />
+          <Stack direction="column" spacing={2}>
+            <TextField
+              label="Setting Name"
+              data-cy={SETTING_NAME_FIELD_CY}
+              value={settingName}
+              onChange={(e) => setSettingName(e.target.value)}
+            />
+            <TextField
+              label="Setting Value"
+              data-cy={SETTING_VALUE_FIELD_CY}
+              value={settingValue}
+              onChange={(e) => setSettingValue(e.target.value)}
+            />
+            <Button
+              data-cy={UPDATE_APP_SETTING_BUTTON_CY}
+              onClick={() => handleAppSetting(settingName, settingValue)}
+            >
+              Update Setting
+            </Button>
+          </Stack>
+          <SmallPre data-cy={APP_SETTING_CONTAINER_CY}>
+            {JSON.stringify(appSettingArray, undefined, 2)}
           </SmallPre>
         </Stack>
         <Divider orientation="vertical" flexItem />
@@ -83,9 +140,7 @@ const PlayerView: FC = () => {
           <Divider />
           <div>
             <Typography variant="h6">Members</Typography>
-            <SmallPre>
-              {members.map((m) => JSON.stringify(m, undefined, 2)).join('\n')}
-            </SmallPre>
+            <SmallPre>{JSON.stringify(members, undefined, 2)}</SmallPre>
           </div>
         </Stack>
       </Stack>
