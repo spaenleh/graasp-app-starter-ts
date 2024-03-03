@@ -1,3 +1,7 @@
+> **Warning**
+> 
+> This repository is out of date, please refer to up-to-date templates in the Graasp repository
+
 # Graasp App Template Typescript
 
 This repository hosts a template for a Graasp app using Typescript, React, MUI and the Graasp API.
